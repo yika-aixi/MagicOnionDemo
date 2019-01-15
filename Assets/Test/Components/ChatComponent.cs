@@ -53,12 +53,16 @@ namespace Test.Components
         {
             //被销毁,调用离开
             this._chatHub.LeaveAsync();
+            this._chatHub = null;
         }
 
         private void OnApplicationQuit()
         {
-            //游戏结束,调用离开
-            this._chatHub.LeaveAsync();
+            if (_chatHub != null)
+            {
+                //游戏结束,调用离开
+                this._chatHub.LeaveAsync();
+            }
         }
 
         #region Client -> Server
