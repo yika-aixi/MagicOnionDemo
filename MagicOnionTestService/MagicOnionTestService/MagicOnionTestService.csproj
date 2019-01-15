@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MagicOnion" Version="2.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MagicOnionTestServiceInterfaces\MagicOnionTestServiceInterfaces.csproj" />
+    </ItemGroup>
+    
+    <!--客户端接口引用-->
+    <ItemGroup>
+        <Compile Include="..\..\Assets\Test\Interfaces\IChat.cs" />
+        <Compile Include="..\..\Assets\Test\Interfaces\IChatHub.cs" />
+    </ItemGroup>
+    <!--客户端接口引用-->
+
+</Project>
