@@ -10,3 +10,7 @@
 
 - *服务器中引用了`Assets\Test\Interfaces\`路径下的`IChat.cs`和`IChatHub.cs`,例子中是客户端复制了这2个接口的代码,我是服务端引用了,为什么在服务端,是因为客户端那边Unity会修改`.csproj`所以放到了服务端
 
+
+Unity打开`Assets\Scenes\SampleScene.unity`开始游戏就可以了
+
+`ChatComponent`组件挂在`Canvas`上
