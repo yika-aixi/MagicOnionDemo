@@ -24,7 +24,7 @@ namespace MagicOnionTestService
 
             // MagicOnion起動
             server.Start();
-
+            
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"启动完成... {serverPort.Host}:{serverPort.Port}");
             Console.ForegroundColor = ConsoleColor.White;

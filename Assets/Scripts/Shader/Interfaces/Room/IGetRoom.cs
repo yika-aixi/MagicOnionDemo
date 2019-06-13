@@ -7,15 +7,19 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MagicOnion;
 
 namespace MagicOnionTestService.LobbyMessageTest.Room
 {
-    public interface IGetRoom
+    /// <summary>
+    /// 房间服务 - > 客户端调用 
+    /// </summary>
+    public interface IGetRoomService:IService<IGetRoomService>
     {
         /// <summary>
         /// 获取房间列表
         /// </summary>
         /// <returns></returns>
-        Task<List<string>> GetRoomList();
+        UnaryResult<string[]>  GetRoomList();
     }
 }
