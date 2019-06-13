@@ -11,8 +11,7 @@
     
     <!--客户端接口引用-->
     <ItemGroup>
-        <Reference Include="..\..\Assets\Test\Interfaces\*.cs" />
-        <ClCompile Include="..\..\Assets\Test\Interfaces\*.cs" />
+        <Compile Include="..\..\Assets\Test\Interfaces\*.cs" Link="*.cs" />
     </ItemGroup>
     <!--客户端接口引用-->
 
