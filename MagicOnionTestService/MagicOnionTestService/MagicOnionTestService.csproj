@@ -8,15 +8,11 @@
     <ItemGroup>
       <PackageReference Include="MagicOnion" Version="2.0.3" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\MagicOnionTestServiceInterfaces\MagicOnionTestServiceInterfaces.csproj" />
-    </ItemGroup>
     
     <!--客户端接口引用-->
     <ItemGroup>
-        <Compile Include="..\..\Assets\Test\Interfaces\IChat.cs" />
-        <Compile Include="..\..\Assets\Test\Interfaces\IChatHub.cs" />
+        <Reference Include="..\..\Assets\Test\Interfaces\*.cs" />
+        <ClCompile Include="..\..\Assets\Test\Interfaces\*.cs" />
     </ItemGroup>
     <!--客户端接口引用-->
 
