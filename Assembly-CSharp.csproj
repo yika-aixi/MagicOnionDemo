@@ -69,12 +69,14 @@
     <Compile Include="Assets\SampleScenes\Scripts\ParticleSceneControls.cs" />
     <Compile Include="Assets\SampleScenes\Scripts\PlaceTargetWithMouse.cs" />
     <Compile Include="Assets\SampleScenes\Scripts\SlowMoButton.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\ChatComponent.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\ChatEvents.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\DontDestroyOnLoadComponent.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\MagicOnionManager.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\PlayerChatComponent.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\PlayerManager.cs" />
+    <Compile Include="Assets\Scripts\Chat\Component\ShowHeadMesgComponent.cs" />
     <Compile Include="Assets\Scripts\Chat\Component\TextSetInputFieldTextComponent.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\IChat.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\IChatHub.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\ILobby.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\ISendMessage.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\Room\IGetRoom.cs" />
     <Compile Include="Assets\Scripts\MagicOnion\AsyncLock.cs" />
     <Compile Include="Assets\Scripts\MagicOnion\AsyncStreamReaderExtensions.cs" />
     <Compile Include="Assets\Scripts\MagicOnion\Client\DynamicClientBuilder.cs" />
@@ -190,7 +192,12 @@
     <Compile Include="Assets\Scripts\MessagePack\Unity\UnityResolver.cs" />
     <Compile Include="Assets\Scripts\MessagePack\UnsafeExtensions\UnityBlitResolver.cs" />
     <Compile Include="Assets\Scripts\MessagePack\UnsafeExtensions\UnsafeBlitFormatter.cs" />
-    <Compile Include="Assets\Test\Components\ChatComponent.cs" />
+    <Compile Include="Assets\Scripts\Shader\Interfaces\IChatHub.cs" />
+    <Compile Include="Assets\Scripts\Shader\Interfaces\IChatHubReceiver.cs" />
+    <Compile Include="Assets\Scripts\Shader\Interfaces\Room\IGetRoom.cs" />
+    <Compile Include="Assets\Scripts\Shader\MessageObjects\JoinOrCreateRoomMesg.cs" />
+    <Compile Include="Assets\Scripts\Shader\MessageObjects\SendMesg.cs" />
+    <Compile Include="Assets\Scripts\Shader\MessageObjects\SendMesgResponses.cs" />
     <None Include="Assets\SampleScenes\Shaders\Skybox-Procedural.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>E:/GitHubProject/MagicOnionTest/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
