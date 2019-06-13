@@ -8,6 +8,5 @@ namespace MagicOnionTestService.LobbyMessageTest
 {
     public interface IChat:ILobby,ISendMessage
     {
-        
     }
 }

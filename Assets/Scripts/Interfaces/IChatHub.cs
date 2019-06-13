@@ -15,8 +15,9 @@ namespace MagicOnionTestService.LobbyMessageTest
         /// 加入房间
         /// </summary>
         /// <param name="userName">名字</param>
+        /// <param name="roomName">房间名</param>
         /// <returns></returns>
-        Task JoinAsync(string userName);
+        Task JoinAsync(string userName,string roomName);
         /// <summary>
         /// 退出房间
         /// </summary>

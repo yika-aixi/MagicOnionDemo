@@ -14,17 +14,21 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
     {
         IGroup room;
         string me;
-        //房间名字
-        const string roomName = "Chat Room";
-        public async Task JoinAsync(string userName)
+        public async Task JoinAsync(string userName,string roomName)
         {
             //加入房间
             this.room = await this.Group.AddAsync(roomName);
+
+            var count = await room.GetMemberCountAsync();
+            
+            Console.WriteLine("Current Room Player Count: " + count);
+            
             //保存名字
             me = userName;
             //广播消息:加入房间
             this.Broadcast(room).OnJoin(userName);
-            Console.WriteLine($"{userName} Join Room");
+            
+            Console.WriteLine($"{userName} Join Room. Player Count : {count}");
         }
 
         public async Task LeaveAsync()
@@ -36,12 +40,14 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
             Console.WriteLine($"{me} Leave Room");
         }
 
-
+#pragma warning disable 1998
         public async Task SendMessageAsync(string message)
+#pragma warning restore 1998
         {
+            Console.WriteLine($"{me} Send Message : {message}");
+
             //广播消息:发送消息
             this.Broadcast(room).OnSendMessage(me, message);
-            Console.WriteLine($"{me} Send Message : {message}");
         }
 
         protected override ValueTask OnDisconnected()
