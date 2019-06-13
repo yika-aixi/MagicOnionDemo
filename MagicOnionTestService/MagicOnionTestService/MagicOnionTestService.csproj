@@ -11,7 +11,15 @@
     
     <!--客户端接口引用-->
     <ItemGroup>
-        <Compile Include="..\..\Assets\Test\Interfaces\*.cs" Link="*.cs" />
+        <Compile Include="..\..\Assets\Scripts\Interfaces\*.cs" Link="*.cs" />
+        <Compile Remove="exe\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Remove="exe\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="exe\**" />
+      <None Remove="exe.rar" />
     </ItemGroup>
     <!--客户端接口引用-->
 
