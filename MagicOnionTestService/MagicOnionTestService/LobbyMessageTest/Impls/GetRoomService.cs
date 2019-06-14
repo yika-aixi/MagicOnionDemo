@@ -5,6 +5,7 @@
 //2019年06月14日-02:22
 //MagicOnionTestService
 
+using System.Linq;
 using MagicOnion;
 using MagicOnion.Server;
 using MagicOnionTestService.LobbyMessageTest.Room;
@@ -13,9 +14,11 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
 {
     public class GetRoomService:ServiceBase<IGetRoomService>,IGetRoomService
     {
-        public UnaryResult<string[]> GetRoomList()
+        public async UnaryResult<RoomInfo[]> GetRoomList()
         {
-            return UnaryResult(RoomManager.Rooms.ToArray());
+            var result = await RoomManager.GetRoomInfos();
+
+            return result.ToArray();
         }
     }
 }

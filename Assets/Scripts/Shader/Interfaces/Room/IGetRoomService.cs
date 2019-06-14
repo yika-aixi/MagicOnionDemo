@@ -20,6 +20,6 @@ namespace MagicOnionTestService.LobbyMessageTest.Room
         /// 获取房间列表
         /// </summary>
         /// <returns></returns>
-        UnaryResult<string[]>  GetRoomList();
+        UnaryResult<RoomInfo[]>  GetRoomList();
     }
 }

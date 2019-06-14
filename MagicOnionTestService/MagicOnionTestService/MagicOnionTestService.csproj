@@ -6,14 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MagicOnion" Version="2.0.3" />
+      <PackageReference Include="MagicOnion" Version="2.1.2" />
+      <PackageReference Include="MagicOnion.Redis" Version="2.1.2" />
     </ItemGroup>
 
 
     <!--客户端接口引用-->
     <ItemGroup>
-        <Compile Include="..\..\Assets\Scripts\Shader\*\*.cs" Exclude="*.meta" Link="*.cs" />
-        <Compile Include="..\..\Assets\Scripts\Shader\*\*\*.cs" Exclude="*.meta" Link="*.cs" />
+        <Compile Include="..\..\Assets\Scripts\Shader\**\*.cs" Exclude="*.meta" LinkBase="Sahder" />
     </ItemGroup>
     <!--客户端接口引用-->
     

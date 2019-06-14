@@ -15,8 +15,9 @@ namespace MagicOnionTestService
             var service = MagicOnionEngine.BuildServerServiceDefinition(isReturnExceptionStackTraceInErrorDetail: true);
 
             var serverPort = new ServerPort("localhost", 12345, ServerCredentials.Insecure);
+            
             // localhost:12345でListen
-            var server = new global::Grpc.Core.Server
+            var server = new Server
             {
                 Services = { service },
                 Ports = { serverPort }
@@ -24,7 +25,7 @@ namespace MagicOnionTestService
 
             // MagicOnion起動
             server.Start();
-            
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"启动完成... {serverPort.Host}:{serverPort.Port}");
             Console.ForegroundColor = ConsoleColor.White;

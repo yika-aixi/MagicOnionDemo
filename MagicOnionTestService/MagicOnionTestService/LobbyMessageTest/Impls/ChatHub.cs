@@ -15,33 +15,44 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
     {
         IGroup room;
         string me;
-        public async Task JoinOrCreateRoom(JoinOrCreateRoomMesg mesg)
+        public async Task JoinChat(JoinOrCreateRoomMesg mesg)
         {
-            //加入房间
-            this.room = await this.Group.AddAsync(mesg.RoomName);
+            //获取房间
+            this.room = RoomManager.GetRoom(mesg.RoomName);
 
+            if (room == null)
+            {
+                Console.WriteLine($"no Room {mesg.RoomName}");
+                return;
+            }
+            
             var count = await room.GetMemberCountAsync();
             
-            Console.WriteLine("Current Room Player Count: " + count);
+            Console.WriteLine("Current Chat Player Count: " + count);
             
             //保存名字
             me = mesg.UserName;
-            
+
             //广播消息:加入房间
-            this.Broadcast(room).OnJoinRoom(mesg);
+            Broadcast(room).OnJoinChat(mesg);
             
-            Console.WriteLine($"{mesg.UserName} Join {mesg.RoomName} Room. {mesg.RoomName} Room Player Count : {count}");
+            Console.WriteLine($"{mesg.UserName} Join {mesg.RoomName} Chat. {mesg.RoomName} Chat Player Count : {count}");
         }
 
-        public async Task LeaveRoom()
+        public async Task LeaveChat()
         {
             //离开房间
-            await room.RemoveAsync(this.Context);
+            var result = await RoomManager.LeaveRoom(room, Context);
+
+            if (!result)
+            {
+                return;
+            }
             
-            //广播消息:退出房间
-            this.Broadcast(room).OnLeaveRoom(me);
+            //广播消息:离开聊天
+            this.Broadcast(room).OnLeaveChat(me);
             
-            Console.WriteLine($"{me} Leave {room.GroupName} Room");
+            Console.WriteLine($"{me} Leave {room.GroupName} Chat");
         }
 
 #pragma warning disable 1998
@@ -51,7 +62,7 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
             Console.WriteLine($"{me} Send Message : {mesg.Message}");
 
             //广播消息:发送消息
-            this.Broadcast(room).OnSendMessage(new SendMesgResponses(me,mesg));
+            this.BroadcastExceptSelf(room).OnSendMessage(new SendMesgResponses(me,mesg));
         }
     }
 }
