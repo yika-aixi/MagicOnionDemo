@@ -7,6 +7,7 @@
 
 using System;
 using System.Threading.Tasks;
+using MagicOnion.Client;
 using MagicOnion.Server.Hubs;
 using MagicOnionTestService.LobbyMessageTest.Room;
 
@@ -34,6 +35,8 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
 
         public async Task JoinOrCreateRoom(string roomName, string playerName)
         {
+            #region 因为Context的不一样,导致广播调用不到函数,所以其他hub必须加入Context才行,所以先只是创建而已,等作者添加支持
+
             var result = RoomManager.GetRoom(roomName,out _room);
 
             if (result)
@@ -49,6 +52,8 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
 
             _playerName = playerName;
             
+            #endregion
+            
             Broadcast(_room).OnJoinRoom(playerName);
 
             Console.WriteLine($"{playerName} Join {roomName} Room.");
@@ -62,15 +67,14 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
                 return;
             }
             
-            var result = await RoomManager.LeaveRoom(_room, Context);
-
-            if (!result)
-            {
-                return;
-            }
-            
             Broadcast(_room).OnLeaveRoom(_playerName);
-            
+
+            #region 因为Context的不一样,导致广播调用不到函数,所以其他hub必须加入Context才行,所以先只是创建而已,所以不离开房间
+
+            await RoomManager.LeaveRoom(_room, Context);
+
+            #endregion
+
             Console.WriteLine($"{_playerName} Leave {_room.GroupName} Room.");
         }
     }

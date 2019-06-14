@@ -21,8 +21,7 @@ namespace Chat.Component
     public class MagicOnionManager : MonoBehaviour
     {
         public Channel Channel { get; private set; } 
-        private IChatHub _chatHub;
-        private IGetRoomService _getRoomService;
+        public IGetRoomService RoomService;
 
         [NonSerialized] 
         public bool IsConnect;
@@ -35,7 +34,7 @@ namespace Chat.Component
         [Header("UI块")]
         public CanvasGroup ConnectServerUI;
 
-        public CanvasGroup RoomUI;
+        public List<CanvasGroup> Others;
 
         [Header("房间名按钮模块")]
         public Button RoomNameButtonTemplate;
@@ -48,7 +47,19 @@ namespace Chat.Component
         {
             Instance = this;
             ConnectServerUI.alpha = 1;
-            RoomUI.alpha = 0;
+            Others.ForEach(x=>x.alpha = 0);
+            RoomComponent.LeaveRoomEve += RefreshRoomList;
+        }
+
+        private async void OnDestroy()
+        {
+            try
+            {
+                await Channel.ShutdownAsync();
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         public void Connect()
@@ -82,43 +93,48 @@ namespace Chat.Component
             {
                 Channel = new Channel(url,channelCredentials);
                 
-                _getRoomService = MagicOnionClient.Create<IGetRoomService>(Channel);
+                RoomService = MagicOnionClient.Create<IGetRoomService>(Channel);
                 
                 IsConnect = true;
                 
                 ConnectServerUI.alpha = 0;
-                RoomUI.alpha = 1;
+                Others.ForEach(x=>x.alpha = 1);
             }
             catch (Exception e)
             {
                 
             }
 
+            RefreshRoomList();
+        }
+
+        public async void RefreshRoomList()
+        {
             try
             {
                 var roomList = await GetRoomList();
-                
+
                 for (var i = _roomNameButtons.Count; i < roomList.Length; i++)
                 {
                     _roomNameButtons.Add(null);
                 }
-                
+
                 for (var index = 0; index < roomList.Length; index++)
                 {
-                    var roomName = roomList[index];
+                    var roomInfo = roomList[index];
 
                     var button = _roomNameButtons[index];
 
                     if (!button)
                     {
-                        _roomNameButtons[index] = Instantiate(RoomNameButtonTemplate,RoomNameButtonTemplateParent);
+                        _roomNameButtons[index] = Instantiate(RoomNameButtonTemplate, RoomNameButtonTemplateParent);
 
                         button = _roomNameButtons[index];
-                        
+
                         button.gameObject.SetActive(true);
                     }
 
-                    button.transform.GetChild(0).GetComponent<Text>().text = roomName;
+                    button.transform.GetChild(0).GetComponent<Text>().text = $"{roomInfo.RoomName}-{roomInfo.PlayerCount}";
                 }
             }
             catch (Exception e)
@@ -130,14 +146,14 @@ namespace Chat.Component
         /// 获取房间列表,如果没有连接返回null
         /// </summary>
         /// <returns></returns>
-        public async UnaryResult<string[]> GetRoomList()
+        public async UnaryResult<RoomInfo[]> GetRoomList()
         {
             if (!IsConnect)
             {
                 return null;
             }
 
-            return await _getRoomService.GetRoomList();
+            return await RoomService.GetRoomList();
         }
     }
 }

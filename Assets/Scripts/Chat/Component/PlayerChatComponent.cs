@@ -15,12 +15,19 @@ namespace Chat.Component
     {
         [SerializeField] 
         private string _userName;
+        
+        private ShowHeadMesgComponent _showHead;
+        
+        private void Awake()
+        {
+            _showHead = GetComponent<ShowHeadMesgComponent>();
+        }
 
         public void Init(string userName)
         {
             _userName = userName;
             
-            ChatEvents.SendMessage += ChatEventsOnSendMessage;
+            ChatComponent.SendMessageEve += ChatEventsOnSendMessage;
         }
 
         /// <summary>
@@ -28,19 +35,21 @@ namespace Chat.Component
         /// </summary>
         public void Close()
         {
-            ChatEvents.SendMessage -= ChatEventsOnSendMessage;
+            ChatComponent.SendMessageEve -= ChatEventsOnSendMessage;
         }
-
-        private void OnDestroy()
-        {
-            ChatEvents.SendMessage -= ChatEventsOnSendMessage;
-        }
-
+        
         private void ChatEventsOnSendMessage(SendMesgResponses obj)
         {
             if (_userName == obj.UserName)
             {
-                ShowHeadMesgComponent.Instance.ShowMesg(gameObject,obj.Messg.Message);
+                try
+                {
+                    _showHead.ShowMesg(obj.Messg.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
         }
     }

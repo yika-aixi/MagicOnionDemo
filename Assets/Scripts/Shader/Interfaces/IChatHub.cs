@@ -18,17 +18,17 @@ namespace MagicOnionTestService.LobbyMessageTest
     public interface IChatHub:IStreamingHub<IChatHub,IChatHubReceiver>
     {
         /// <summary>
-        /// 加入或创建房间
+        /// 加入聊天
         /// </summary>
         /// <param name="mesg"></param>
         /// <returns></returns>
-        Task JoinOrCreateRoom(JoinOrCreateRoomMesg mesg);
+        Task JoinChat(JoinOrCreateRoomMesg mesg);
 
         /// <summary>
-        /// 离开房间
+        /// 离开聊天
         /// </summary>
         /// <returns></returns>
-        Task LeaveRoom();
+        Task LeaveChat();
         
         /// <summary>
         /// 发送消息

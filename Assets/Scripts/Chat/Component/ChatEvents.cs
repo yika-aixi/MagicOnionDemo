@@ -11,27 +11,8 @@ using UnityEngine;
 
 namespace Chat.Component
 {
-    public static class ChatEvents
+    public partial class ChatComponent
     {
-        public static event Action<JoinOrCreateRoomMesg> JoinRoom;
-
-        public static event Action<string> LeaveRoom;
-
-        public static event Action<SendMesgResponses> SendMessage;
-
-        public static void OnJoinRoom(JoinOrCreateRoomMesg mesg)
-        {
-            JoinRoom?.Invoke(mesg);
-        }
-        
-        public static void OnLeaveRoom(string userName)
-        {
-            LeaveRoom?.Invoke(userName);
-        }
-        
-        public static void OnSendMessage(SendMesgResponses mesg)
-        {
-            SendMessage?.Invoke(mesg);
-        }
+        public static event Action<SendMesgResponses> SendMessageEve;
     }
 }

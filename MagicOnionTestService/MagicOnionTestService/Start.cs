@@ -1,6 +1,7 @@
 ﻿using System;
 using Grpc.Core;
 using MagicOnion.Server;
+using StackExchange.Redis;
 
 namespace MagicOnionTestService
 {
@@ -29,6 +30,7 @@ namespace MagicOnionTestService
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"启动完成... {serverPort.Host}:{serverPort.Port}");
             Console.ForegroundColor = ConsoleColor.White;
+            
             // コンソールアプリが落ちないようにReadLineで待つ
             Console.ReadLine();
         }

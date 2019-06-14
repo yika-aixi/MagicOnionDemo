@@ -25,7 +25,8 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
                 Console.WriteLine($"no Room {mesg.RoomName}");
                 return;
             }
-            
+
+            await this.room.AddAsync(Context);
             var count = await room.GetMemberCountAsync();
             
             Console.WriteLine("Current Chat Player Count: " + count);
@@ -41,16 +42,11 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
 
         public async Task LeaveChat()
         {
-            //离开房间
-            var result = await RoomManager.LeaveRoom(room, Context);
-
-            if (!result)
-            {
-                return;
-            }
-            
             //广播消息:离开聊天
             this.Broadcast(room).OnLeaveChat(me);
+            
+            //离开房间
+            await RoomManager.LeaveRoom(room, Context);
             
             Console.WriteLine($"{me} Leave {room.GroupName} Chat");
         }
@@ -62,7 +58,7 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
             Console.WriteLine($"{me} Send Message : {mesg.Message}");
 
             //广播消息:发送消息
-            this.BroadcastExceptSelf(room).OnSendMessage(new SendMesgResponses(me,mesg));
+            this.Broadcast(room).OnSendMessage(new SendMesgResponses(me,mesg));
         }
     }
 }

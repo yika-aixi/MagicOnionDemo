@@ -6,69 +6,116 @@
 //Assembly-CSharp
 
 using System;
-using System.Threading.Tasks;
+using System.Linq;
 using MagicOnion.Client;
 using MagicOnionTestService.LobbyMessageTest;
 using Shader.MessageObjects;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityStandardAssets.Characters.ThirdPerson;
 
 namespace Chat.Component
 {
-    public class ChatComponent:MonoBehaviour,IChatHubReceiver
+    public partial class ChatComponent:MonoBehaviour,IChatHubReceiver
     {
-        string _playerName;
         private IChatHub _chatHub;
-        private bool _isJoin;
+        [NonSerialized]
+        public bool IsJoin;
 
         public CanvasGroup RoomUI;
-        
-        [Header("Names")]
-        public InputField RoomName;
-        public InputField UserName;
-        
-        
-        [Header("消息显示")]
-        public Text ChatText;
-        
-        [Header("消息输入框")]
-        public InputField MessageInputField;
+        public CanvasGroup ChatUI;
 
         public static ChatComponent Instance;
+
+        public InputField messageInputField;
         
         void Awake()
         {
             Instance = this;
+            ChatUI.alpha = 0;
+            
+            RoomComponent.JoinRoomEve += JoinOrCreateRoom;
+            RoomComponent.LeaveRoomEve += LeaveRoom;
+        }
+        public KeyCode[] activationKeys = {KeyCode.Return, KeyCode.KeypadEnter};
+        bool eatActivation;
+        void Start()
+        {
+            // end edit listener
+            messageInputField.onEndEdit.AddListener((value) => {
+                // submit key pressed? then submit and set new input text
+                if (AnyKeyDown(activationKeys))
+                {
+                    SendMessage(new SendMesg(value));
+                    
+                    messageInputField.text = "";
+                    messageInputField.MoveTextEnd(false);
+                    eatActivation = true;
+                }
+
+                // unfocus the whole chat in any case. otherwise we would scroll or
+                // activate the chat window when doing wsad movement afterwards
+                DeselectCarefully();
+            });
         }
 
-        public void OnJoinRoom(JoinOrCreateRoomMesg mesg)
+        private void Update()
         {
-            ChatEvents.OnJoinRoom(mesg);
+            if (AnyKeyDown(activationKeys) && !eatActivation)
+                messageInputField.Select();
+            eatActivation = false;
+        }
 
-            var player = PlayerManager.Instance.CreatePlayer(mesg.UserName);
+        // deselect any UI element carefully
+        // (it throws an error when doing it while clicking somewhere, so we have to
+        //  double check)
+        public static void DeselectCarefully()
+        {
+            if (!Input.GetMouseButton(0) &&
+                !Input.GetMouseButton(1) &&
+                !Input.GetMouseButton(2))
+                EventSystem.current.SetSelectedGameObject(null);
+        }
+        
+        public static bool AnyKeyDown(KeyCode[] keys)
+        {
+            return keys.Any(k => Input.GetKeyDown(k));
+        }
+
+
+        private void OnDestroy()
+        {
+            _shutdown();
+        }
+
+        public async void OnJoinChat(JoinOrCreateRoomMesg mesg)
+        {
+            //todo 进入场景 -- 游戏场景
+            SceneManager.LoadScene(2);
             
-            var con = player.GetComponent<ThirdPersonUserControl>();
-            
-            if (mesg.UserName != _playerName)
+            var localPlayer = mesg.UserName == LocalPlayer.PlayerName;
+
+            var player = PlayerManager.Instance.CreatePlayer(localPlayer,mesg.UserName);
+
+            ChatUI.alpha = 1;
+            RoomUI.alpha = 0;
+            if (!localPlayer)
             {
                 _showMesg($"{mesg.UserName} Join Room.");
-            
-                con.enabled = false;
-            }
-            else
-            {
-                con.enabled = true;
             }
         }
 
-        public void OnLeaveRoom(string playerName)
+        public async void OnLeaveChat(string playerName)
         {
-            ChatEvents.OnLeaveRoom(playerName);
+            //todo 进入场景 -- 主场景
+            SceneManager.LoadScene(1);
             
             PlayerManager.Instance.DestroyPlayer(playerName);
             
-            if (playerName != _playerName)
+            ChatUI.alpha = 0;
+            
+            if (playerName != LocalPlayer.PlayerName)
             {
                 _showMesg($"{playerName} Leave Room.");
             }
@@ -76,110 +123,91 @@ namespace Chat.Component
 
         public void OnSendMessage(SendMesgResponses mesg)
         {
-            if (mesg.UserName != _playerName)
+            SendMessageEve?.Invoke(mesg);
+            
+            if (mesg.UserName == LocalPlayer.PlayerName)
             {
-                _showMesg($"My: {mesg.Messg}");
+                _showMesg($"My: {mesg.Messg.Message}");
             }
             else
             {
-                _showMesg($"{mesg.UserName}: {mesg.Messg}");
+                _showMesg($"{mesg.UserName}: {mesg.Messg.Message}");
             }
         }
 
         void _showMesg(string mesg)
         {
-            ChatText.text += "\n" +
-                             $"{DateTime.Now:yyyy-MM-dd;HH:mm}: {mesg}";
-        }
-
-
-        #region Call Server Function
-
-        public async void JoinOrCreateRoom()
-        {
-            if (!RoomName | !UserName)
-            {
-                return;    
-            }
-
-            string roomName = RoomName.text;
-
-            string userName = UserName.text;
-            
-            if (string.IsNullOrWhiteSpace(roomName))
-            {
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                return;
-            }
-
-            var joinResult = await JoinOrCreateRoom(new JoinOrCreateRoomMesg(roomName, userName));
-
-            if (joinResult)
-            {
-                RoomUI.alpha = 0;
-            }
+           LogComponentManager.Instance.ShowLog(mesg);
         }
         
-        public async Task<bool> JoinOrCreateRoom(JoinOrCreateRoomMesg mesg)
+        private async void _shutdown()
         {
             try
             {
-                if (!MagicOnionManager.Instance.IsConnect)
+                if (IsJoin)
                 {
-                    return false;
+                    await _chatHub.LeaveChat();
                 }
-            
+            }
+            catch
+            {
+                // ignored
+            }
+
+            try
+            {
+                await _chatHub.DisposeAsync();
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+
+        #region Call Server Function
+        
+        public async void JoinOrCreateRoom()
+        {
+            try
+            {
                 this._chatHub = StreamingHubClient.Connect<IChatHub, IChatHubReceiver>(MagicOnionManager.Instance.Channel, this);
                 
-                await _chatHub.JoinOrCreateRoom(mesg);
-                //todo 进入场景
+                await _chatHub.JoinChat(new JoinOrCreateRoomMesg(LocalPlayer.RoomName,LocalPlayer.PlayerName));
 
-                return true;
+                _waitDisConnect();
+                
+                IsJoin = true;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
             }
+        }
 
-            return false;
+        private async void _waitDisConnect()
+        {
+            try
+            {
+                await _chatHub.WaitForDisconnect();
+            }
+            catch (Exception e)
+            {
+                _shutdown();
+            }
         }
 
         public async void LeaveRoom()
         {
             try
             {
-                await _chatHub.LeaveRoom();
-                await _chatHub.DisposeAsync();
-                await MagicOnionManager.Instance.Channel.ShutdownAsync();
+                await _chatHub.LeaveChat();
 
-                //todo 离开场景
-                
-                //
-                RoomUI.alpha = 1;
+                IsJoin = false;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
             }
-        }
-
-        public void SendMessage()
-        {
-            if (!MessageInputField)
-            {
-                return;    
-            }
-            
-            if (string.IsNullOrWhiteSpace(MessageInputField.text))
-            {
-                return;
-            }
-            
-            SendMessage(new SendMesg(MessageInputField.text));
         }
 
         public async void SendMessage(SendMesg mesg)

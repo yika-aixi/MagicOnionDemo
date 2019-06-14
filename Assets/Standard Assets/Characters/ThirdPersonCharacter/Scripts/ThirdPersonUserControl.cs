@@ -32,19 +32,34 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_Character = GetComponent<ThirdPersonCharacter>();
         }
 
+        public static Action<Vector3,Vector3, Quaternion, bool, bool> OnMove;
 
         private void Update()
         {
+            if (_return) return;
+            
             if (!m_Jump)
             {
                 m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
             }
+
+            if (!m_Cam)
+            {
+                m_Cam = Camera.main.transform;  
+            }
         }
 
+        private bool _return;
+        void OnApplicationFocus(bool result)
+        {
+            _return = !result;
+        }
 
         // Fixed update is called in sync with physics
         private void FixedUpdate()
         {
+            if (_return) return;
+
             // read inputs
             float h = CrossPlatformInputManager.GetAxis("Horizontal");
             float v = CrossPlatformInputManager.GetAxis("Vertical");
@@ -55,20 +70,26 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             {
                 // calculate camera relative direction to move:
                 m_CamForward = Vector3.Scale(m_Cam.forward, new Vector3(1, 0, 1)).normalized;
-                m_Move = v*m_CamForward + h*m_Cam.right;
+                m_Move = v * m_CamForward + h * m_Cam.right;
             }
             else
             {
                 // we use world-relative directions in the case of no main camera
-                m_Move = v*Vector3.forward + h*Vector3.right;
+                m_Move = v * Vector3.forward + h * Vector3.right;
             }
 #if !MOBILE_INPUT
-			// walk speed multiplier
-	        if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 0.5f;
+            // walk speed multiplier
+            if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 0.5f;
 #endif
 
             // pass all parameters to the character control script
             m_Character.Move(m_Move, crouch, m_Jump);
+            
+            //同步
+            {
+                OnMove?.Invoke(transform.position, m_Move, transform.rotation, crouch, m_Jump);
+            }
+
             m_Jump = false;
         }
     }

@@ -23,7 +23,7 @@ namespace Chat.Component
 
         public void SetText(Text text)
         {
-            _inputField.text = text.text;
+            _inputField.text = text.text.Split('-')[0];
         }
     }
 }

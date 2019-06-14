@@ -20,5 +20,19 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
 
             return result.ToArray();
         }
+
+        public async UnaryResult<int> GetRoomPlayerCount(string roomName)
+        {
+            var room = RoomManager.GetRoom(roomName);
+
+            if (room != null)
+            {
+                var count = await room.GetMemberCountAsync();
+
+                return count;
+            }
+
+            return -1;
+        }
     }
 }

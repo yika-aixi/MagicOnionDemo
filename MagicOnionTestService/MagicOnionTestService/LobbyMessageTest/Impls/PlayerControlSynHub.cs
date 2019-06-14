@@ -5,7 +5,9 @@
 //2019年06月14日-17:15
 //MagicOnionTestService
 
+using System;
 using System.Threading.Tasks;
+using MagicOnion;
 using MagicOnion.Server.Hubs;
 using MagicOnionTestService.LobbyMessageTest.PlayerControlSyn;
 using Shader.MessageObjects;
@@ -16,11 +18,14 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
     {
         private IGroup _room;
         
-        public Task Init(PlayerControlInitMesg mesg)
+        public async Task Init(PlayerControlInitMesg mesg)
         {
-            _room = RoomManager.GetRoom(mesg.RoomName);
-            
-            return NilTask;
+            var result = RoomManager.GetRoom(mesg.RoomName,out _room);
+
+            if (result)
+            {
+                await _room.AddAsync(Context);
+            }
         }
 
         public Task Move(PlayerMoveControlMesg mesg)
@@ -30,11 +35,9 @@ namespace MagicOnionTestService.LobbyMessageTest.Impls
             return NilTask;
         }
 
-        public Task Jump(string name)
-        {
-            this.BroadcastExceptSelf(_room).OnJump(name);
-            
-            return NilTask;
-        }
+//        async Task IStreamingHub<IPlayerControlSynHub, IPlayerControlSynReceiver>.DisposeAsync()
+//        {
+//            await _room.RemoveAsync(Context);
+//        }
     }
 }

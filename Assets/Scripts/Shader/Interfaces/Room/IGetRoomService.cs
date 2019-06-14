@@ -21,5 +21,12 @@ namespace MagicOnionTestService.LobbyMessageTest.Room
         /// </summary>
         /// <returns></returns>
         UnaryResult<RoomInfo[]>  GetRoomList();
+
+        /// <summary>
+        /// 获取房间玩家数量
+        /// </summary>
+        /// <param name="roomName"></param>
+        /// <returns></returns>
+        UnaryResult<int> GetRoomPlayerCount(string roomName);
     }
 }

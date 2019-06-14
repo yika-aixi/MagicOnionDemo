@@ -5,6 +5,7 @@
 //2019年06月14日-01:50
 //Assembly-CSharp
 
+using System.Threading.Tasks;
 using Shader.MessageObjects;
 
 namespace MagicOnionTestService.LobbyMessageTest
@@ -15,17 +16,17 @@ namespace MagicOnionTestService.LobbyMessageTest
     public interface IChatHubReceiver
     {
         /// <summary>
-        /// 玩家加入房间
+        /// 玩家加入聊天
         /// </summary>
         /// <param name="mesg"></param>
         /// <returns></returns>
-        void OnJoinRoom(JoinOrCreateRoomMesg mesg);
+        void OnJoinChat(JoinOrCreateRoomMesg mesg);
 
         /// <summary>
-        /// 玩家离开房间
+        /// 玩家离开聊天
         /// </summary>
         /// <returns></returns>
-        void OnLeaveRoom(string playerName);
+        void OnLeaveChat(string playerName);
         
         /// <summary>
         /// 玩家发送消息

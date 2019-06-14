@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -9,7 +8,6 @@
       <PackageReference Include="MagicOnion" Version="2.1.2" />
       <PackageReference Include="MagicOnion.Redis" Version="2.1.2" />
     </ItemGroup>
-
 
     <!--客户端接口引用-->
     <ItemGroup>
@@ -21,5 +19,4 @@
         <None Remove="exe\**" />
         <None Remove="exe.rar" />
     </ItemGroup>
-
 </Project>

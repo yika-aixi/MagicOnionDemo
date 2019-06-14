@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/SampleScenes/Scenes/CharacterThirdPerson.unity
-    guid: 0cb5d44a4c963f145acdb0a0c95d9d1b
+    path: Assets/Scenes/0-Main.unity
+    guid: 6a99c431575ea9848a2d6a1bd6c4814d
+  - enabled: 1
+    path: Assets/Scenes/1-Main.unity
+    guid: 6ef7d8681fb1f7b42ac2b7483a650609
+  - enabled: 1
+    path: Assets/Scenes/2-Chat.unity
+    guid: 2a2a0871f3c5c3840bca5118a011eda7
   m_configObjects: {}

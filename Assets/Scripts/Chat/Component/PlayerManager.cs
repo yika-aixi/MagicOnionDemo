@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.Characters.ThirdPerson;
 
 namespace Chat.Component
 {
@@ -14,27 +15,43 @@ namespace Chat.Component
     {
         public GameObject PlayerPrefbs;
 
+        [HideInInspector]
         public List<GameObject> Players;
         
         public static PlayerManager Instance;
 
         void Awake()
         {
-            if (Players == null)
-            {
-                Players = new List<GameObject>();
-            }
-            else
-            {
-                DestroyAllPlayer();
-            }
-            
+            Players = new List<GameObject>();
+
             Instance = this;
         }
 
-        public GameObject CreatePlayer(string playerName)
+        public GameObject GetPlayer(string playerName)
+        {
+            if (string.IsNullOrWhiteSpace(playerName))
+            {
+                return null;
+            }
+            
+            return _getPlayer(playerName);
+        }
+
+        public GameObject CreatePlayer(bool localPlayer,string playerName)
         {
             var player = _getPlayer();
+            player.SetActive(true);
+            var con = player.GetComponent<ThirdPersonUserControl>();
+            if (localPlayer)
+            {
+                player.tag = "Player";
+                con.enabled = true;
+            }
+            else
+            {
+                con.enabled = false;
+                player.tag = "OtherPlayer";
+            }
             
             player.name = playerName;
             
@@ -52,6 +69,10 @@ namespace Chat.Component
                 var player = Players[i];
                 
                 player.SetActive(false);
+                
+                var chatComponent = _getOrAdd(player);
+            
+                chatComponent.Close(); 
             }
         }
 
@@ -65,13 +86,15 @@ namespace Chat.Component
 
             if (player)
             {
+                player.SetActive(false);
+                
                 var chatComponent = _getOrAdd(player);
             
                 chatComponent.Close(); 
             }
         }
 
-        GameObject _getPlayer(string name = null)
+        GameObject _getPlayer(string getPlayerName = null)
         {
             GameObject player = null;
             
@@ -81,7 +104,7 @@ namespace Chat.Component
                 
                 if (go.activeInHierarchy)
                 {
-                    if (name == go.name)
+                    if (getPlayerName == go.name)
                     {
                         return go;
                     }
@@ -92,7 +115,7 @@ namespace Chat.Component
                 player = go;
             }
 
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(getPlayerName))
             {
                 return player;
             }
@@ -100,6 +123,7 @@ namespace Chat.Component
             if (!player)
             {
                 player = Instantiate(PlayerPrefbs,transform);
+                Players.Add(player);
             }
 
             return player;
